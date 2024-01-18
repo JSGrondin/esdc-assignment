@@ -11,6 +11,16 @@ from sklearn.model_selection import train_test_split
 
 class Dataset:
     def __init__(self, filename, stopwords_path):
+        """
+        Dataset class for Arxiv articles.
+
+        Inputs
+        ------
+        filename: string
+            Path to dataset csv file.
+        stopwords_path: string
+            Path to stopwords txt file.
+        """
         self.filename = filename
         self.stopwords_path = stopwords_path
 
@@ -19,6 +29,10 @@ class Dataset:
         self._pre_process()
 
     def _load_data(self):
+        """
+        Loads the Arxiv articles dataset and prints several information
+        about the data.
+        """
         print("Loading the data")
         self.df = pd.read_csv(self.filename)
         print(f"Dataset has {len(self.df)} rows.")
@@ -30,23 +44,37 @@ class Dataset:
             print(f"--{category}")
 
     def _load_stopwords(self):
+        # Loads the stopwords txt file and store as attributes for later use.
         with open(self.stopwords_path, "r") as f:
             stopwords = f.read()
             stopwords = stopwords.split('\n')[:-1]
         self.stopwords = stopwords
 
     def _pre_process(self):
+        # Preprocess the 'Abstract' column, i.e. the text data.
         print("Pre-processing the text data...")
         self.df['Abstract'] = self.df['Abstract'].apply(lambda x: self._process_text(x, self.stopwords))
 
     @staticmethod
     def _process_text(text, stopwords):
         """
-        Processes the input text by performing the following steps:
+        Processes the input text by performing the following four steps:
         1. Tokenizing text
         2. Removing stopwords
         3. Removing punctuation
-        4. Lemmatizing remaining tokens
+        4. Stemming remaining tokens
+
+        Inputs
+        ------
+        text: string
+            Text data string corresponding to one sample.
+        stopwords: list
+            List of all stopwords.
+        
+        Return
+        ------
+        string
+            Text data without punctuation and stopwords, lowered and stemmed.
         """
         tokens = word_tokenize(text)
         punctuation = set(string.punctuation)
@@ -62,8 +90,21 @@ class Dataset:
         return ' '.join(processed_text)    
     
     def create_splits(self):
+        """
+        Splits the data into training and validation sets (80% train, 20% validation).
+
+        Return
+        ------
+        X_train: pd.core.series.Series
+            Training text data.
+        X_val: pd.core.series.Series
+            Validation text data.
+        y_train: pd.core.series.Series
+            Training labels.
+        y_val: pd.core.series.Series
+            Validation labels.
+        """
         print("Creating splits")
-        # Split the data into training and validation sets (80% train, 20% validation)
         X_train, X_val, y_train, y_val = train_test_split(self.text_data, self.labels, test_size=0.2, random_state=42)
         return X_train, X_val, y_train, y_val
 
