@@ -1,10 +1,18 @@
 # Your Imports
-import pandas as pd
+import sys
+import os
 import nltk
 import string
+import pandas as pd
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from sklearn.model_selection import train_test_split
+
+project_dir = os.path.dirname(__file__)
+sys.path.append(project_dir)
+sys.path.append(os.path.dirname(project_dir)) # add parent directory to access utils
+
+from utils.utils import remove_non_ascii
 
 
 class Dataset:
@@ -18,8 +26,8 @@ class Dataset:
             Path to dataset csv file.
         stopwords_path: string
             Path to stopwords txt file.
-        verbose: bool
-            Whether to add informative verbose statements.
+        verbose: bool, optional
+            Whether to add informative verbose statements. Default: True
         """
         self.filename = filename
         self.stopwords_path = stopwords_path
@@ -89,10 +97,11 @@ class Dataset:
         processed_text = []
         for word in tokens:
             lower_word = word.lower()
+            # lower_word = remove_non_ascii(lower_word)  # data seems to already be strictly ascii
             if lower_word not in stopwords and lower_word not in punctuation:
                 stemmed = stemmer.stem(lower_word)
                 processed_text.append(stemmed)
-        
+
         return ' '.join(processed_text)    
     
     def create_splits(self):
@@ -123,7 +132,7 @@ class Dataset:
     def labels(self):
         return self.df['Category']
 
-# Outside of your class
+
 def download_nltk_resources():
     for resource in ['punkt', 'wordnet', 'omw-1.4']:
         nltk.download(resource)

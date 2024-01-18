@@ -1,7 +1,6 @@
 # Your imports
 import sys
 import os
-from turtle import down
 project_dir = os.path.dirname(__file__)
 sys.path.append(project_dir)
 sys.path.append(os.path.dirname(project_dir)) # add parent directory to access utils
@@ -9,6 +8,7 @@ sys.path.append(os.path.dirname(project_dir)) # add parent directory to access u
 from dataset import Dataset, download_nltk_resources
 from model import Model
 from utils.utils import Results
+
 
 if __name__ == '__main__':
 
