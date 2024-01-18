@@ -2,15 +2,13 @@
 import pandas as pd
 import nltk
 import string
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from sklearn.model_selection import train_test_split
 
+
 class Dataset:
-    def __init__(self, filename, stopwords_path):
+    def __init__(self, filename, stopwords_path, verbose=True):
         """
         Dataset class for Arxiv articles.
 
@@ -20,39 +18,47 @@ class Dataset:
             Path to dataset csv file.
         stopwords_path: string
             Path to stopwords txt file.
+        verbose: bool
+            Whether to add informative verbose statements.
         """
         self.filename = filename
         self.stopwords_path = stopwords_path
+        self.verbose = verbose
 
         self._load_data()
         self._load_stopwords()
         self._pre_process()
+
 
     def _load_data(self):
         """
         Loads the Arxiv articles dataset and prints several information
         about the data.
         """
-        print("Loading the data")
+        if self.verbose:
+            print("Loading the data")
         self.df = pd.read_csv(self.filename)
-        print(f"Dataset has {len(self.df)} rows.")
-        print(f"Dataset has the following columns: {self.df.columns}")
-        nans_in_df = {col: self.df[col].isnull().sum() for col in self.df.columns}
-        print(f"Dataset has the following count of NaNs: {nans_in_df}")
-        print(f"Dataset has {self.df['Category'].nunique()} different categories, namely")
-        for category in set(self.df['Category'].tolist()):
-            print(f"--{category}")
+        
+        if self.verbose:
+            print(f"Dataset has {len(self.df)} rows.")
+            print(f"Dataset has the following columns: {self.df.columns}")
+            nans_in_df = {col: self.df[col].isnull().sum() for col in self.df.columns}
+            print(f"Dataset has the following count of NaNs: {nans_in_df}")
+            print(f"Dataset has {self.df['Category'].nunique()} different categories, namely")
+            for category in set(self.df['Category'].tolist()):
+                print(f"--{category}")
 
     def _load_stopwords(self):
         # Loads the stopwords txt file and store as attributes for later use.
         with open(self.stopwords_path, "r") as f:
             stopwords = f.read()
             stopwords = stopwords.split('\n')[:-1]
-        self.stopwords = stopwords
+        self.stopwords = set(stopwords) # converting to set for faster lookup
 
     def _pre_process(self):
         # Preprocess the 'Abstract' column, i.e. the text data.
-        print("Pre-processing the text data...")
+        if self.verbose:
+            print("Pre-processing the text data...")
         self.df['Abstract'] = self.df['Abstract'].apply(lambda x: self._process_text(x, self.stopwords))
 
     @staticmethod
@@ -104,7 +110,8 @@ class Dataset:
         y_val: pd.core.series.Series
             Validation labels.
         """
-        print("Creating splits")
+        if self.verbose:
+            print("Creating splits")
         X_train, X_val, y_train, y_val = train_test_split(self.text_data, self.labels, test_size=0.2, random_state=42)
         return X_train, X_val, y_train, y_val
 
@@ -115,3 +122,8 @@ class Dataset:
     @property
     def labels(self):
         return self.df['Category']
+
+# Outside of your class
+def download_nltk_resources():
+    for resource in ['punkt', 'wordnet', 'omw-1.4']:
+        nltk.download(resource)
