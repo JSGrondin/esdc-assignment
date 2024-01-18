@@ -54,7 +54,13 @@ class Dataset:
             print(f"Dataset has the following count of NaNs: {nans_in_df}")
             print(f"Dataset has {self.df['Category'].nunique()} different categories, namely")
             for category in set(self.df['Category'].tolist()):
-                print(f"--{category}")
+                print(f"--{category}: {len(self.df[self.df['Category'] == category])} samples.")
+            
+            self.df['length'] = self.df['Abstract'].apply(len)
+            print(f"Minimum Length: {self.df['length'].min()}")
+            print(f"Mean Length: {self.df['length'].mean():.2f}")
+            print(f"Maximum Length: {self.df['length'].max()}")
+            self.df.drop('length', axis=1, inplace=True)
 
     def _load_stopwords(self):
         # Loads the stopwords txt file and store as attributes for later use.
