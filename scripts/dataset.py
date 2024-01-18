@@ -25,6 +25,9 @@ class Dataset:
         print(f"Dataset has the following columns: {self.df.columns}")
         nans_in_df = {col: self.df[col].isnull().sum() for col in self.df.columns}
         print(f"Dataset has the following count of NaNs: {nans_in_df}")
+        print(f"Dataset has {self.df['Category'].nunique()} different categories, namely")
+        for category in set(self.df['Category'].tolist()):
+            print(f"--{category}")
 
     def _load_stopwords(self):
         with open(self.stopwords_path, "r") as f:

@@ -1,21 +1,22 @@
 # Your imports
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
 
 class Model:
-    # TODO :: If necessary, add variables that you need to initiate this class
-    def __init__(self, ):
-        # Instantiate your vectorizer object and Multinomial Naive bayes object
-        self.vectorizer = ...
-        self.classifier = ...
+    def __init__(self):
+        # Instantiate vectorizer object and Multinomial Naive bayes object
+        self.vectorizer = TfidfVectorizer()
+        self.classifier = MultinomialNB()
 
-    # TODO :: Fit the models (vectorizer and classifier)
-    # We describe the vectorizer as a model because we need to fit it to the dataset
-    def fit(self, ):
+    def fit(self, X_train, y_train):
         print("Fitting...")
-        ...
+        X_train = self.vectorizer.fit_transform(X_train)
+        
+        self.classifier.fit(X_train, y_train)
 
-    # TODO :: Make predictions on unseen data (using the available classifier's predict method). Return the predictions
-    def predict(self, ):
+    def predict(self, X_val):
         print("Predicting...")
-        return
+        X_val = self.vectorizer.transform(X_val)
+        predictions = self.classifier.predict(X_val)
+        return predictions
 

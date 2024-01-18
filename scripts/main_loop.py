@@ -1,9 +1,13 @@
 # Your imports
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
+project_dir = os.path.dirname(__file__)
+sys.path.append(project_dir)
+sys.path.append(os.path.dirname(project_dir)) # add parent directory to access utils
 
 from dataset import Dataset
+from model import Model
+from utils.utils import Results
 
 if __name__ == '__main__':
 
@@ -16,4 +20,19 @@ if __name__ == '__main__':
     # Create splits
     X_train, X_val, y_train, y_val = data.create_splits()
 
-    # TODO :: Complete the main (refer to the assignment.md or devoir.md)
+    # Create model object
+    model = Model()
+    
+    # Fitting model
+    model.fit(X_train, y_train)
+
+    # Predicting on val set
+    y_preds = model.predict(X_val)
+
+    # Create results object
+    results = Results(y_preds, y_val)
+
+    # Output results and generate heatmaps
+    print(f"Accuracy: {results.accuracy()}")
+    print(f"Classification Report: \n{results.class_report()}")
+    results.conf_mat()
