@@ -31,9 +31,11 @@ class Results:
         plt.show()
 
 
-def remove_non_ascii(words):
-    new_words = []
-    for word in words:
-        new_word = unicodedata.normalize('NFKD', word).encode('ascii', 'ignore').decode('utf-8', 'ignore')
-        new_words.append(new_word)
-    return ''.join(new_words)
+def remove_non_ascii(word):
+    new_word = []
+    for char in word:
+        new_char = unicodedata.normalize('NFKD', char).encode('ascii', 'ignore').decode('utf-8', 'ignore')
+        new_word.append(new_char)
+        if char != new_char:
+            print(f"{char} -> {new_char}")
+    return ''.join(new_word)
